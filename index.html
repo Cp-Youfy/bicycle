@@ -48,9 +48,11 @@
             <img src="playerSprite/p_3.gif" id="pf3">
             <img src="playerSprite/p_4.gif" id="pf4">
             <img src="playerSprite/p_5.gif" id="pf5">
+            <img src="obstacleSprite/o_1.png" id="o1">
         </div>
     </main>
     <script>
+        // https://mathspp.com/blog/javascript-2d-scrolling-game-tutorial
         const canvas = document.getElementById('gameCanvas')
         const ctx = canvas.getContext('2d')
 
@@ -70,32 +72,28 @@
         function checkAllImagesLoaded() {
             imagesLoaded++;
             if (imagesLoaded == totalFrames) {
-                animateGame();
+                gameLoop();
             }
         }
 
-        // Main animation game loop
-        function animateGame() {
-            // Clears canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw background
-            // drawBackground()
-
-            // Draw obstacles
-            // drawTrees()
-
+        function drawBike() {
             // Bicycle animation
-            wPlayer = 80
-            hPlayer = 60
+            hPlayer = canvas.height * 0.1
+            wPlayer = canvas.height * 0.1
             xPlayer = 40
             yPlayer = canvas.height - hPlayer - 20
             ctx.drawImage(frames[currentFrame], xPlayer, yPlayer, wPlayer, hPlayer);
 
             currentFrame = (currentFrame + 1) % totalFrames;
-            
-            // Loop
-            requestAnimationFrame(animateGame);
+        }
+
+        function gameLoop() {
+            // Clears canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the bicycle
+            drawBike();
+            requestAnimationFrame(gameLoop)
         }
 
         frames.forEach(frame => {
