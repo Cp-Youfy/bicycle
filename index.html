@@ -46,6 +46,7 @@
             <img src="assets/cycle2.png" id="pf1">
             <img src="assets/cycle3.png" id="pf2">
             <img src="assets/cycle4.png" id="pf3">
+            <img src="assets/apple.png" id="apple">
         </div>
     </main>
     <script>
@@ -79,6 +80,15 @@
         }
         var gravity = 0.4; // determines falling and jump height
         const groundHeight = 0; // modify based on background
+        var speed = 3; // speed at which obstacles / background scroll
+
+        // Defines the apple obstacle
+        const oApple = {
+            img: document.getElementById('apple'),
+            // Dynamically update based on canvas size
+            height: 0,
+            width: 0,
+        }
 
         const player = {
             height: 0,
@@ -115,6 +125,9 @@
             gravity += 0.04;
         }
 
+        var obstacles = []
+        const obstacleTypes = [oApple]
+        var nextObstacleGap = 0;
 
         function updateParams() {
             // Updates position of objects
@@ -136,6 +149,33 @@
                 }
             }
 
+            // Obstacle
+            var len = obstacles.length;
+            // If no obstacles exist or obstacle gap from right edge is large enough
+            if (len === 0 || canvas.width - obstacles[len-1].x >= nextObstacleGap) {
+                // Pick an obstacle randomly first
+                var obstacleType = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+                var newObstacle = {
+                    img: obstacleType.img,
+                    width: obstacleType.width,
+                    height: obstacleType.height,
+                    x: canvas.width,
+                    y: canvas.height - obstacleType.height
+                }
+                obstacles.push(newObstacle);
+                nextObstacleGap = (canvas.width + newObstacle.width) / 3 + Math.random() * 100;
+                console.log(obstacles)
+            }
+
+            obstacles.forEach((obstacle) =>
+            { obstacle.x -= speed; }
+            );
+
+            // Removes passed obstacles
+            obstacles = obstacles.filter((obstacle) =>
+                { return obstacle.x + obstacle.width >= 0; }
+            )
+
             if (heldKeys['KeyD']) {
                 // Allows continuous increase of gravity in braking
                 brake()
@@ -148,6 +188,13 @@
             currentFrame = (currentFrame + 1) % totalFrames;
         }
 
+        function drawObstacles() {
+            obstacles.forEach((obstacle) =>
+            { 
+                ctx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+            });
+        }
+
         function gameLoop() {
             // Clears canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -155,12 +202,12 @@
             // Draw the bicycle
             updateParams();
             drawBike();
+            drawObstacles();
             requestAnimationFrame(gameLoop)
         }
 
         function resizeCanvas() {
-            // Allows for dynamic scaling of canvas
-            // Without distorting asset scaling
+            // Scales the canvas upon first load
             canvas.width = window.innerWidth * 0.8;
             canvas.height = window.innerHeight * 0.8;
 
@@ -168,6 +215,9 @@
             player.height = canvas.height * 0.2;
             player.width = player.height;
             player.y = canvas.height - player.height - 20;
+
+            oApple.height = canvas.height * 0.2;
+            oApple.width = oApple.height * 0.6;
         }
 
 
@@ -191,7 +241,7 @@
         )
 
         // Resizes canvas whenever the event is triggered
-        window.addEventListener('resize', resizeCanvas);
+        // window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
         frames.forEach(frame => {
