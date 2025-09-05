@@ -18,8 +18,8 @@
         }
 
         canvas {
-            height: 80vh;
             width: 80vw;
+            height: 80vh;
             box-sizing: border-box;
             margin: 0;
             position: absolute;
@@ -42,13 +42,10 @@
     <main>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="hidden">
-            <img src="playerSprite/p_0.gif" id="pf0">
-            <img src="playerSprite/p_1.gif" id="pf1">
-            <img src="playerSprite/p_2.gif" id="pf2">
-            <img src="playerSprite/p_3.gif" id="pf3">
-            <img src="playerSprite/p_4.gif" id="pf4">
-            <img src="playerSprite/p_5.gif" id="pf5">
-            <img src="obstacleSprite/o_1.png" id="o1">
+            <img src="assets/cycle1.png" id="pf0">
+            <img src="assets/cycle2.png" id="pf1">
+            <img src="assets/cycle3.png" id="pf2">
+            <img src="assets/cycle4.png" id="pf3">
         </div>
     </main>
     <script>
@@ -61,8 +58,6 @@
             document.getElementById('pf1'),
             document.getElementById('pf2'),
             document.getElementById('pf3'),
-            document.getElementById('pf4'),
-            document.getElementById('pf5')
         ];
         
         var currentFrame = 0;
@@ -76,14 +71,80 @@
             }
         }
 
-        function drawBike() {
-            // Bicycle animation
-            hPlayer = canvas.height * 0.1
-            wPlayer = canvas.height * 0.1
-            xPlayer = 40
-            yPlayer = canvas.height - hPlayer - 20
-            ctx.drawImage(frames[currentFrame], xPlayer, yPlayer, wPlayer, hPlayer);
+        var gearState = 2; // default - affects gravity
+        const gearToGravity = {
+            1: 0.1,
+            2: 0.2,
+            3: 0.3,
+        }
+        var gravity = 0.4; // determines falling and jump height
+        const groundHeight = 0; // modify based on background
 
+        const player = {
+            height: 0,
+            width: 0,
+            x: 40,
+            y: 0,
+            vy: 0, // vertical velocity
+            // State variables
+            isJumping: true, 
+        }
+
+        function jump() {
+            player.vy = -8;
+            gravity = gearToGravity[gearState]
+            player.isJumping = true;
+        }
+
+        function shiftGears(gearNum) {
+            console.log(gearNum)
+            if (gearNum === "1") {
+                gearState = 1;
+            }
+            else if (gearNum === "2") {
+                gearState = 2;
+            }
+            else if (gearNum === "3") {
+                gearState = 3;
+            }
+            gravity = gearToGravity[gearState]
+        }
+
+        function brake() {
+            // Increases gravity with each press
+            gravity += 0.04;
+        }
+
+
+        function updateParams() {
+            // Updates position of objects
+            // Player
+            if (player.isJumping) {
+                player.vy += gravity;
+                player.y += player.vy;
+
+                // // Falling gravity should make more sense
+                // if (player.vy > 0) {
+                //     gravity = 0.5
+                // }
+
+                // Check for ground collision
+                if (player.y + player.height >= canvas.height - groundHeight) {
+                    player.isJumping = false;
+                    player.y = canvas.height - player.height - groundHeight;
+                    gravity = gearToGravity[gearState]
+                }
+            }
+
+            if (heldKeys['KeyD']) {
+                // Allows continuous increase of gravity in braking
+                brake()
+            }
+        }
+
+        function drawBike() {
+            // Draw the player
+            ctx.drawImage(frames[currentFrame], player.x, player.y, player.width, player.height);
             currentFrame = (currentFrame + 1) % totalFrames;
         }
 
@@ -92,9 +153,46 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw the bicycle
+            updateParams();
             drawBike();
             requestAnimationFrame(gameLoop)
         }
+
+        function resizeCanvas() {
+            // Allows for dynamic scaling of canvas
+            // Without distorting asset scaling
+            canvas.width = window.innerWidth * 0.8;
+            canvas.height = window.innerHeight * 0.8;
+
+            // Scales objects accordingly
+            player.height = canvas.height * 0.2;
+            player.width = player.height;
+            player.y = canvas.height - player.height - 20;
+        }
+
+
+
+        /* Main code */
+        // Keydown events
+        heldKeys = {} // for keys where continuous holding has to be detected
+
+        document.addEventListener(
+        "keydown", (event) => { 
+            if (event.code === "Space") jump();
+            if (event.code === "Digit1" || event.code === "Digit2" || event.code === "Digit3") shiftGears(event.code.slice(-1));
+            if (event.code === "KeyD" && player.isJumping) heldKeys[event.code] = true;
+        },
+        );
+
+        document.addEventListener(
+            "keyup", (event) => {
+                heldKeys[event.code] = false;
+            }
+        )
+
+        // Resizes canvas whenever the event is triggered
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         frames.forEach(frame => {
             if (frame.complete) {
