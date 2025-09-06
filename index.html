@@ -130,8 +130,12 @@
         var obstacles = []
         const obstacleTypes = [oApple]
         var nextObstacleGap = 0;
+        var score = 0;
 
         function updateParams() {
+            // Increment the score (per frame)
+            ++ score;
+
             // Updates position of objects
             // Player
             if (player.isJumping) {
@@ -243,9 +247,13 @@
                 // Display text for debug mode
                 ctx.fillStyle = "black";
                 ctx.font = "24px Comic Sans MS";
-                ctx.fillText("Debug Mode Enabled (Key M)", 0, 24);
-                ctx.fillText("Colliding: " + isColliding.toString(), 0, 48)
+                ctx.fillText("Debug Mode Enabled (Key M)", canvas.width - 350, 30);
+                ctx.fillText("Colliding: " + isColliding.toString(), canvas.width - 190, 60)
             }
+            
+            ctx.fillStyle = "black";
+            ctx.font = "30px Comic Sans MS";
+            ctx.fillText("Score: " + score, 20, 40);
         }
 
         var theta = 0
