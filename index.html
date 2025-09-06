@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Pixelify Sans' rel='stylesheet'>
     <style>
         * {
             padding: 0;
             margin: 0;
+            font-family: 'Pixelify Sans';
         }
 
         main {
@@ -251,14 +253,14 @@
             if (debugMode) {
                 // Display text for debug mode
                 ctx.fillStyle = "black";
-                ctx.font = "24px Comic Sans MS";
+                ctx.font = "24px Pixelify Sans";
                 ctx.fillText("Debug Mode Enabled (Key M)", canvas.width - 350, 30);
                 ctx.fillText("Colliding: " + isColliding.toString(), canvas.width - 190, 60);
                 ctx.fillText("Speed: " + speed.toFixed(3), canvas.width - 200, 90);
             }
             
             ctx.fillStyle = "black";
-            ctx.font = "30px Comic Sans MS";
+            ctx.font = "30px Pixelify Sans";
             ctx.fillText("Score: " + score, 20, 40);
         }
 
@@ -300,7 +302,7 @@
         function drawEndScreen() {
             // Draws the game over screen
             ctx.fillStyle = "red";
-            ctx.font = "48px Comic Sans MS";
+            ctx.font = "48px Pixelify Sans";
             ctx.fillText("Game over", canvas.width / 2, canvas.height / 2 - 5);
             endScreenAnimationDone = true;
         }
