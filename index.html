@@ -134,7 +134,12 @@
 
         function updateParams() {
             // Increment the score (per frame)
-            ++ score;
+            // Only when not in debug mode for legitimacy's sake
+            // (haha who am I kidding just edit source code)
+            if (!debugMode) ++ score;
+
+            // Cap the speed or it is kinda impossible to play
+            if (speed <= 9) speed += 0.001;
 
             // Updates position of objects
             // Player
@@ -248,7 +253,8 @@
                 ctx.fillStyle = "black";
                 ctx.font = "24px Comic Sans MS";
                 ctx.fillText("Debug Mode Enabled (Key M)", canvas.width - 350, 30);
-                ctx.fillText("Colliding: " + isColliding.toString(), canvas.width - 190, 60)
+                ctx.fillText("Colliding: " + isColliding.toString(), canvas.width - 190, 60);
+                ctx.fillText("Speed: " + speed.toFixed(3), canvas.width - 200, 90);
             }
             
             ctx.fillStyle = "black";
@@ -297,6 +303,8 @@
             ctx.fillText("Game over", canvas.width / 2, canvas.height / 2 - 5);
         }
 
+        var isPaused = false;
+
         function gameLoop() {
             // Clears canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -316,7 +324,7 @@
             }
             else {
                 // Loop again
-                requestAnimationFrame(gameLoop)
+                if (!isPaused) requestAnimationFrame(gameLoop);
             } 
         }
 
@@ -347,6 +355,10 @@
             if (event.code === "KeyD" && player.isJumping) heldKeys[event.code] = true;
             if (event.code === "KeyH") drawHitbox = !drawHitbox;
             if (event.code === "KeyM") debugMode = !debugMode;
+            if (event.code === "KeyP" && !gameOver) {
+                isPaused = !isPaused;
+                gameLoop();
+            }
         },
         );
 
