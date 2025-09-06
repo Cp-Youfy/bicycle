@@ -66,6 +66,8 @@
         var currentFrame = 0;
         var imagesLoaded = 0;
         const totalFrames = frames.length;
+        var frameRate = 5;
+        var frameCounter = 0;
 
         function checkAllImagesLoaded() {
             imagesLoaded++;
@@ -176,7 +178,7 @@
                     y: canvas.height - obstacleType.height
                 }
                 obstacles.push(newObstacle);
-                nextObstacleGap = (canvas.width + newObstacle.width) / 3 + Math.random() * 100;
+                nextObstacleGap = (canvas.width + newObstacle.width) / 3 + Math.random() * 200;
                 console.log(obstacles)
             }
 
@@ -232,9 +234,12 @@
                     ctx.fillStyle = 'rgba(0, 255, 0, 0.4)';
                     ctx.fillRect(player.x, player.y, player.width, player.height);
             }
-
+            frameCounter++;
+            if (frameCounter >= frameRate) {
+                currentFrame = (currentFrame + 1) % totalFrames;
+                frameCounter = 0;
+            }
             ctx.drawImage(frames[currentFrame], player.x, player.y, player.width, player.height);
-            currentFrame = (currentFrame + 1) % totalFrames;
         }
 
         function drawObstacles() {
@@ -339,11 +344,11 @@
 
             // Scales objects accordingly
             player.height = canvas.height * 0.2;
-            player.width = player.height;
+            player.width = player.height * 1.4;
             player.y = canvas.height - player.height - 20;
 
-            oApple.height = canvas.height * 0.2;
-            oApple.width = oApple.height * 0.6;
+            oApple.height = canvas.height * 0.1;
+            oApple.width = oApple.height * 0.75;
         }
 
 
@@ -396,6 +401,7 @@
                 // Waits for the load event to finish executing, then check if all images were loaded
                 frame.addEventListener('load', checkAllImagesLoaded);
             }
+            
         });
     </script>
 </body>
