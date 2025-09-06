@@ -101,9 +101,11 @@
         }
 
         function jump() {
-            player.vy = -8;
-            gravity = gearToGravity[gearState]
-            player.isJumping = true;
+            if (!player.isJumping) {
+                player.vy = -8;
+                gravity = gearToGravity[gearState]
+                player.isJumping = true;
+            }
         }
 
         function shiftGears(gearNum) {
@@ -182,8 +184,44 @@
             }
         }
 
+        const pad = 10; // account for a smaller hitbox for smoother gameplay
+        var debugMode = false; // pauses loss condition to test collisions
+        var isColliding = false; // tracks collision for visual display
+        var gameOver = false; // tracks game end state
+
+        function checkCollisions() {
+            // Check for obstacle-player collisions
+            var obstacle = obstacles[0];
+            if (
+                // Player's bottom edge is below top edge of the obstacle
+                player.y + player.height >= obstacle.y + pad
+                // Player's top edge is above bottom edge of the obstacle
+                && player.y <= obstacle.y + obstacle.height - pad
+                // Player's right edge is beyond the left edge of the obstacle
+                && player.x + player.width >= obstacle.x + pad
+                // Player is not past the obstacle
+                && player.x <= obstacle.x + obstacle.width - pad
+            ) {
+                isColliding = true;
+                if (!debugMode) {
+                    // Game loss
+                    gameOver = true;
+                }
+            }
+            else {
+                isColliding = false;
+            }
+        }
+
+        var drawHitbox = false;
+
         function drawBike() {
             // Draw the player
+            if (drawHitbox) {
+                    ctx.fillStyle = 'rgba(0, 255, 0, 0.4)';
+                    ctx.fillRect(player.x, player.y, player.width, player.height);
+            }
+
             ctx.drawImage(frames[currentFrame], player.x, player.y, player.width, player.height);
             currentFrame = (currentFrame + 1) % totalFrames;
         }
@@ -191,19 +229,87 @@
         function drawObstacles() {
             obstacles.forEach((obstacle) =>
             { 
+                if (drawHitbox) {
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+                    ctx.fillRect(obstacle.x + pad, obstacle.y + pad, obstacle.width - pad * 2, obstacle.height - pad * 2);
+                }
+
                 ctx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.width, obstacle.height)
             });
+        }
+
+        function drawPrompts() {
+            if (debugMode) {
+                // Display text for debug mode
+                ctx.fillStyle = "black";
+                ctx.font = "24px Comic Sans MS";
+                ctx.fillText("Debug Mode Enabled (Key M)", 0, 24);
+                ctx.fillText("Colliding: " + isColliding.toString(), 0, 48)
+            }
+        }
+
+        var theta = 0
+        const maxAngle = 180;
+
+        async function wipeScreen () {
+            // Wipes to game over
+            ctx.save();
+            
+            // Set center of rotation
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+           
+            // Draws the wiping colour effect
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            // Measured from positive x-axis, in radians
+            ctx.arc(0, 0, canvas.width * Math.sqrt(2), 0, theta * Math.PI / 180)
+            ctx.closePath()
+
+            ctx.fillStyle = "lightpink";
+            ctx.fill();
+
+            ctx.restore(); // Prevents stacking transforms
+            theta += 2
+
+            if (theta <= maxAngle) {
+                requestAnimationFrame(wipeScreen);
+            } else {
+                drawEndScreen();
+            }
+        }
+
+        async function endScreen() {
+            requestAnimationFrame(wipeScreen);
+        }
+
+        function drawEndScreen() {
+            // Draws the game over screen
+            ctx.fillStyle = "red";
+            ctx.font = "48px Comic Sans MS";
+            ctx.fillText("Game over", canvas.width / 2, canvas.height / 2 - 5);
         }
 
         function gameLoop() {
             // Clears canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw the bicycle
+            // Calculations
             updateParams();
+            checkCollisions();
+
+            // Display
             drawBike();
             drawObstacles();
-            requestAnimationFrame(gameLoop)
+            drawPrompts();
+
+            if (gameOver) {
+                // Game over screen
+                endScreen();
+            }
+            else {
+                // Loop again
+                requestAnimationFrame(gameLoop)
+            } 
         }
 
         function resizeCanvas() {
@@ -231,6 +337,8 @@
             if (event.code === "Space") jump();
             if (event.code === "Digit1" || event.code === "Digit2" || event.code === "Digit3") shiftGears(event.code.slice(-1));
             if (event.code === "KeyD" && player.isJumping) heldKeys[event.code] = true;
+            if (event.code === "KeyH") drawHitbox = !drawHitbox;
+            if (event.code === "KeyM") debugMode = !debugMode;
         },
         );
 
