@@ -283,7 +283,7 @@
             ctx.fill();
 
             ctx.restore(); // Prevents stacking transforms
-            theta += 2
+            theta += 5
 
             if (theta <= maxAngle) {
                 requestAnimationFrame(wipeScreen);
@@ -296,11 +296,13 @@
             requestAnimationFrame(wipeScreen);
         }
 
+        var endScreenAnimationDone = false;
         function drawEndScreen() {
             // Draws the game over screen
             ctx.fillStyle = "red";
             ctx.font = "48px Comic Sans MS";
             ctx.fillText("Game over", canvas.width / 2, canvas.height / 2 - 5);
+            endScreenAnimationDone = true;
         }
 
         var isPaused = false;
@@ -357,6 +359,19 @@
             if (event.code === "KeyM") debugMode = !debugMode;
             if (event.code === "KeyP" && !gameOver) {
                 isPaused = !isPaused;
+                gameLoop();
+            }
+            if (event.code === "KeyR" && gameOver && endScreenAnimationDone) {
+                // Restart the game
+                score = 0;
+                speed = 3;
+                gameOver = false;
+                isPaused = false;
+                endScreenAnimationDone = false;
+                ctx.translate(0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                obstacles = []
+                theta = 0;
                 gameLoop();
             }
         },
