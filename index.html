@@ -68,7 +68,7 @@
         }
 
         a:hover {
-            color: rgb(150, 223, 248)
+            color: rgb(150, 223, 248);
         }
     </style>
     <link rel="icon" type="image/x-icon" href="cycle1.png">
@@ -99,8 +99,8 @@
     </main>
     <script>
         // https://mathspp.com/blog/javascript-2d-scrolling-game-tutorial
-        const canvas = document.getElementById('gameCanvas')
-        const ctx = canvas.getContext('2d')
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
         const frames = [
             document.getElementById('pf0'),
@@ -175,7 +175,7 @@
         function jump() {
             if (!player.isJumping) {
                 player.vy = -8;
-                gravity = gearToGravity[gearState]
+                gravity = gearToGravity[gearState];
                 player.isJumping = true;
             }
         }
@@ -191,7 +191,7 @@
             else if (gearNum === "3") {
                 gearState = 3;
             }
-            gravity = gearToGravity[gearState]
+            gravity = gearToGravity[gearState];
         }
 
         function brake() {
@@ -199,8 +199,8 @@
             gravity += 0.04;
         }
 
-        var obstacles = []
-        const obstacleTypes = [oApple, oBanana, oCone]
+        var obstacles = [];
+        const obstacleTypes = [oApple, oBanana, oCone];
         var nextObstacleGap = 0;
         var score = 0;
         var groundHeight = 0; // modify later based on floor height
@@ -222,14 +222,14 @@
 
                 // // Falling gravity should make more sense
                 // if (player.vy > 0) {
-                //     gravity = 0.5
+                //     gravity = 0.5;
                 // }
 
                 // Check for ground collision
                 if (player.y + player.height >= canvas.height - groundHeight) {
                     player.isJumping = false;
                     player.y = canvas.height - player.height - groundHeight;
-                    gravity = gearToGravity[gearState]
+                    gravity = gearToGravity[gearState];
                 }
             }
 
@@ -265,7 +265,7 @@
 
             if (heldKeys['KeyD']) {
                 // Allows continuous increase of gravity in braking
-                brake()
+                brake();
             }
         }
 
@@ -345,7 +345,7 @@
             ctx.fillText("Score: " + score, 20, 40);
         }
 
-        var theta = 0
+        var theta = 0;
         const maxAngle = 359;
 
         async function wipeScreen() {
@@ -359,7 +359,7 @@
             ctx.beginPath();
             ctx.moveTo(0, 0);
             // Measured from positive x-axis, in radians
-            ctx.arc(0, 0, canvas.width * Math.sqrt(2), 0, theta * Math.PI / 180)
+            ctx.arc(0, 0, canvas.width * Math.sqrt(2), 0, theta * Math.PI / 180);
             ctx.closePath()
 
             ctx.fillStyle = "lightblue";
@@ -465,14 +465,15 @@
                 }
                 if (event.code === "KeyR" && gameOver && endScreenAnimationDone) {
                     // Restart the game
+                    ctx.textAlign = "left";
                     score = 0;
                     speed = 3;
                     gameOver = false;
                     isPaused = false;
                     endScreenAnimationDone = false;
-                    ctx.translate(0, 0);
+                    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformation matrix
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    obstacles = []
+                    obstacles = [];
                     theta = 0;
                     gameLoop();
                 }
