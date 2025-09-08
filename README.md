@@ -1,1 +1,1 @@
-Play the game (https://cp-youfy.github.io/bicycle/)[here]!
+Play the game [here](https://cp-youfy.github.io/bicycle/)!
