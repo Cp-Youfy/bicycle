@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,11 +36,11 @@
         .hidden {
             display: none;
         }
-
     </style>
     <link rel="icon" type="image/x-icon" href="cycle1.png">
     <title>Bicycle Demo</title>
 </head>
+
 <body>
     <main>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -49,6 +50,8 @@
             <img src="assets/cycle3.png" id="pf2">
             <img src="assets/cycle4.png" id="pf3">
             <img src="assets/apple.png" id="apple">
+            <img src="assets/banana.png" id="banana">
+            <img src="assets/trafficcone.png" id="cone">
             <img src="assets/floor.png" id="floor">
         </div>
     </main>
@@ -63,7 +66,7 @@
             document.getElementById('pf2'),
             document.getElementById('pf3'),
         ];
-        
+
         var currentFrame = 0;
         var imagesLoaded = 0;
         const totalFrames = frames.length;
@@ -77,11 +80,11 @@
             }
         }
 
-        var gearState = 2; // default - affects gravity
+        var gearState = 3; // default - affects gravity
         const gearToGravity = {
             1: 0.1,
-            2: 0.2,
-            3: 0.3,
+            2: 0.15,
+            3: 0.2,
         }
         var gravity = 0.4; // determines falling and jump height
         const groundHeight = 0; // modify based on background
@@ -95,6 +98,22 @@
             width: 0,
         }
 
+        // Defines the banana obstacle
+        const oBanana = {
+            img: document.getElementById('banana'),
+            // Dynamically update based on canvas size
+            height: 0,
+            width: 0,
+        }
+
+        // Defines the traffic cone obstacle
+        const oCone = {
+            img: document.getElementById('cone'),
+            // Dynamically update based on canvas size
+            height: 0,
+            width: 0,
+        }
+
         const player = {
             height: 0,
             width: 0,
@@ -102,7 +121,7 @@
             y: 0,
             vy: 0, // vertical velocity
             // State variables
-            isJumping: true, 
+            isJumping: true,
         }
 
         function jump() {
@@ -133,7 +152,7 @@
         }
 
         var obstacles = []
-        const obstacleTypes = [oApple]
+        const obstacleTypes = [oApple, oBanana, oCone]
         var nextObstacleGap = 0;
         var score = 0;
 
@@ -141,7 +160,7 @@
             // Increment the score (per frame)
             // Only when not in debug mode for legitimacy's sake
             // (haha who am I kidding just edit source code)
-            if (!debugMode) ++ score;
+            if (!debugMode) ++score;
 
             // Cap the speed or it is kinda impossible to play
             if (speed <= 9) speed += 0.001;
@@ -168,9 +187,14 @@
             // Obstacle
             var len = obstacles.length;
             // If no obstacles exist or obstacle gap from right edge is large enough
-            if (len === 0 || canvas.width - obstacles[len-1].x >= nextObstacleGap) {
-                // Pick an obstacle randomly first
-                var obstacleType = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+            if (len === 0 || canvas.width - obstacles[len - 1].x >= nextObstacleGap) {
+                if (obstacles[len - 1]?.img != oCone.img) {
+                    // Pick an obstacle randomly first
+                    var obstacleType = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+                } else {
+                    // Prevent two cones from spawning consecutively
+                    var obstacleType = obstacleTypes[Math.floor(Math.random() * (obstacleTypes.length - 1))];
+                }
                 var newObstacle = {
                     img: obstacleType.img,
                     width: obstacleType.width,
@@ -183,13 +207,11 @@
                 console.log(obstacles)
             }
 
-            obstacles.forEach((obstacle) =>
-            { obstacle.x -= speed; }
+            obstacles.forEach((obstacle) => { obstacle.x -= speed; }
             );
 
             // Removes passed obstacles
-            obstacles = obstacles.filter((obstacle) =>
-                { return obstacle.x + obstacle.width >= 0; }
+            obstacles = obstacles.filter((obstacle) => { return obstacle.x + obstacle.width >= 0; }
             )
 
             if (heldKeys['KeyD']) {
@@ -232,8 +254,8 @@
         function drawBike() {
             // Draw the player
             if (drawHitbox) {
-                    ctx.fillStyle = 'rgba(0, 255, 0, 0.4)';
-                    ctx.fillRect(player.x, player.y, player.width, player.height);
+                ctx.fillStyle = 'rgba(0, 255, 0, 0.4)';
+                ctx.fillRect(player.x, player.y, player.width, player.height);
             }
             frameCounter++;
             if (frameCounter >= frameRate) {
@@ -244,8 +266,7 @@
         }
 
         function drawObstacles() {
-            obstacles.forEach((obstacle) =>
-            { 
+            obstacles.forEach((obstacle) => {
                 if (drawHitbox) {
                     ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
                     ctx.fillRect(obstacle.x + pad, obstacle.y + pad, obstacle.width - pad * 2, obstacle.height - pad * 2);
@@ -264,7 +285,7 @@
                 ctx.fillText("Colliding: " + isColliding.toString(), canvas.width - 190, 60);
                 ctx.fillText("Speed: " + speed.toFixed(3), canvas.width - 200, 90);
             }
-            
+
             ctx.fillStyle = "black";
             ctx.font = "30px Pixelify Sans";
             ctx.fillText("Score: " + score, 20, 40);
@@ -273,13 +294,13 @@
         var theta = 0
         const maxAngle = 180;
 
-        async function wipeScreen () {
+        async function wipeScreen() {
             // Wipes to game over
             ctx.save();
-            
+
             // Set center of rotation
             ctx.translate(canvas.width / 2, canvas.height / 2);
-           
+
             // Draws the wiping colour effect
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -335,7 +356,7 @@
             else {
                 // Loop again
                 if (!isPaused) requestAnimationFrame(gameLoop);
-            } 
+            }
         }
 
         function resizeCanvas() {
@@ -348,8 +369,14 @@
             player.width = player.height * 1.4;
             player.y = canvas.height - player.height - 20;
 
-            oApple.height = canvas.height * 0.1;
+            oApple.height = canvas.height * 0.20;
             oApple.width = oApple.height * 0.75;
+
+            oBanana.height = canvas.height * 0.05;
+            oBanana.width = oBanana.height * 2.5;
+
+            oCone.height = canvas.height * 0.3;
+            oCone.width = oCone.height * 0.5;
         }
 
 
@@ -359,30 +386,30 @@
         heldKeys = {} // for keys where continuous holding has to be detected
 
         document.addEventListener(
-        "keydown", (event) => { 
-            if (event.code === "Space") jump();
-            if (event.code === "Digit1" || event.code === "Digit2" || event.code === "Digit3") shiftGears(event.code.slice(-1));
-            if (event.code === "KeyD" && player.isJumping) heldKeys[event.code] = true;
-            if (event.code === "KeyH") drawHitbox = !drawHitbox;
-            if (event.code === "KeyM") debugMode = !debugMode;
-            if (event.code === "KeyP" && !gameOver) {
-                isPaused = !isPaused;
-                gameLoop();
-            }
-            if (event.code === "KeyR" && gameOver && endScreenAnimationDone) {
-                // Restart the game
-                score = 0;
-                speed = 3;
-                gameOver = false;
-                isPaused = false;
-                endScreenAnimationDone = false;
-                ctx.translate(0, 0);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                obstacles = []
-                theta = 0;
-                gameLoop();
-            }
-        },
+            "keydown", (event) => {
+                if (event.code === "Space") jump();
+                if (event.code === "Digit1" || event.code === "Digit2" || event.code === "Digit3") shiftGears(event.code.slice(-1));
+                if (event.code === "KeyD" && player.isJumping) heldKeys[event.code] = true;
+                if (event.code === "KeyH") drawHitbox = !drawHitbox;
+                if (event.code === "KeyM") debugMode = !debugMode;
+                if (event.code === "KeyP" && !gameOver) {
+                    isPaused = !isPaused;
+                    gameLoop();
+                }
+                if (event.code === "KeyR" && gameOver && endScreenAnimationDone) {
+                    // Restart the game
+                    score = 0;
+                    speed = 3;
+                    gameOver = false;
+                    isPaused = false;
+                    endScreenAnimationDone = false;
+                    ctx.translate(0, 0);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    obstacles = []
+                    theta = 0;
+                    gameLoop();
+                }
+            },
         );
 
         document.addEventListener(
@@ -402,8 +429,9 @@
                 // Waits for the load event to finish executing, then check if all images were loaded
                 frame.addEventListener('load', checkAllImagesLoaded);
             }
-            
+
         });
     </script>
 </body>
+
 </html>
