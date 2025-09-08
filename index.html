@@ -87,7 +87,6 @@
             3: 0.2,
         }
         var gravity = 0.4; // determines falling and jump height
-        const groundHeight = 0; // modify based on background
         var speed = 3; // speed at which obstacles / background scroll
 
         // Defines the apple obstacle
@@ -124,6 +123,13 @@
             isJumping: true,
         }
 
+        const floor = {
+            img: document.getElementById('floor'),
+            // Set params later dynamically
+            height: 0,
+            width: 0
+        }
+
         function jump() {
             if (!player.isJumping) {
                 player.vy = -8;
@@ -155,6 +161,7 @@
         const obstacleTypes = [oApple, oBanana, oCone]
         var nextObstacleGap = 0;
         var score = 0;
+        var groundHeight = 0; // modify later based on floor height
 
         function updateParams() {
             // Increment the score (per frame)
@@ -200,7 +207,7 @@
                     width: obstacleType.width,
                     height: obstacleType.height,
                     x: canvas.width,
-                    y: canvas.height - obstacleType.height
+                    y: canvas.height - obstacleType.height - groundHeight,
                 }
                 obstacles.push(newObstacle);
                 nextObstacleGap = (canvas.width + newObstacle.width) / 3 + Math.random() * 200;
@@ -272,8 +279,13 @@
                     ctx.fillRect(obstacle.x + pad, obstacle.y + pad, obstacle.width - pad * 2, obstacle.height - pad * 2);
                 }
 
-                ctx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+                ctx.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             });
+        }
+
+        function drawBackground() {
+            // Draw the floor
+            ctx.drawImage(floor.img, 0, canvas.height - floor.height, canvas.width, floor.height);
         }
 
         function drawPrompts() {
@@ -292,7 +304,7 @@
         }
 
         var theta = 0
-        const maxAngle = 180;
+        const maxAngle = 359;
 
         async function wipeScreen() {
             // Wipes to game over
@@ -308,15 +320,17 @@
             ctx.arc(0, 0, canvas.width * Math.sqrt(2), 0, theta * Math.PI / 180)
             ctx.closePath()
 
-            ctx.fillStyle = "lightpink";
+            ctx.fillStyle = "lightblue";
             ctx.fill();
 
             ctx.restore(); // Prevents stacking transforms
-            theta += 5
+            theta += 10;
 
             if (theta <= maxAngle) {
                 requestAnimationFrame(wipeScreen);
             } else {
+                // Clears canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawEndScreen();
             }
         }
@@ -330,7 +344,12 @@
             // Draws the game over screen
             ctx.fillStyle = "red";
             ctx.font = "48px Pixelify Sans";
+            ctx.textAlign = "center";
             ctx.fillText("Game over", canvas.width / 2, canvas.height / 2 - 5);
+            ctx.fillStyle = "black";
+            ctx.font = "36px Pixelify Sans";
+            ctx.fillText("Final Score: " + score, canvas.width / 2, canvas.height / 2 + 45);
+            ctx.fillText("Press R to restart", canvas.width / 2, canvas.height / 2 + 95);
             endScreenAnimationDone = true;
         }
 
@@ -345,6 +364,7 @@
             checkCollisions();
 
             // Display
+            drawBackground();
             drawBike();
             drawObstacles();
             drawPrompts();
@@ -377,6 +397,11 @@
 
             oCone.height = canvas.height * 0.3;
             oCone.width = oCone.height * 0.5;
+
+            floor.height = canvas.height * 0.4;
+            floor.width = canvas.width;
+
+            groundHeight = floor.height; // modify based on background
         }
 
 
