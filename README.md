@@ -14,7 +14,7 @@ Restart the game (after game over screen is fully loaded)<br>
 <img width="60" height="57" alt="1key" src="https://github.com/user-attachments/assets/e3f1fed7-4a15-408a-999b-19a705f7ffc0" />
 <img width="60" height="57" alt="2key" src="https://github.com/user-attachments/assets/2c103c4a-d767-482c-85cd-eb1541bef6fe" />
 <img width="60" height="57" alt="3key" src="https://github.com/user-attachments/assets/b8eb5d12-d5a9-473a-9c84-d23222b82217" />
-Change jump height ("gear")<br>
+Change jump height<br>
 
 <img width="60" height="57" alt="dkey" src="https://github.com/user-attachments/assets/5492854a-a295-4c75-b29d-69e1c84436be" />
 Fall faster midjump<br>

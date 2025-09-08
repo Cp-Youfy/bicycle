@@ -1,19 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Pixelify Sans' rel='stylesheet'>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Pixelify Sans', 'Arial', sans-serif;
+            background-color: black;
+        }
+
+        main {
+            padding-top: 50px;
+            padding-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+            font-weight: 900;
+            color: pink;
+        }
+
+        li {
+            list-style-type: none;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5em;
+        }
+
+        .keyInstruction {
+            margin-left: 0.5em;
+        }
+
+        a {
+            color: lightblue;
+            text-decoration: none;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 1px white, 0 0 1em white, 0 0 0.1em white;
+        }
+
+        a:visited {
+            color: lightblue;
+        }
+
+        a:hover {
+            color: rgb(150, 223, 248)
+        }
+    </style>
     <title>Game Instructions</title>
 </head>
+
 <body>
-    <ul>
-        <li>P: Pause game</li>
-        <li>H: Toggle hitbox displays</li>
-        <li>M: Toggle debug mode</li>
-        <li>R: Restart the game (after game over screen is fully loaded)</li>
-        <li>1, 2, 3: Change jump height ("gear")</li>
-        <li>D: Fall faster midjump</li>
-        <li>Space: Jump</li>
-    </ul>
+    <main>
+        <h1>Game Instructions</h1>
+        <ul>
+            <li><img width=" 60" height="57" alt="P: " src="assets/keys/pkey.png" />
+                <span class="keyInstruction">Pause game</span>
+            </li>
+
+            <li><img width=" 60" height="57" alt="H: " src="assets/keys/hkey.png" />
+                <span class="keyInstruction">Toggle hitbox displays</span>
+            </li>
+            <li><img width=" 60" height="57" alt="M: " src="assets/keys/mkey.png" />
+                <span class="keyInstruction">Toggle debug mode</span>
+            </li>
+            <li><img width=" 60" height="57" alt="R: " src="assets/keys/rkey.png" />
+                <span class="keyInstruction">Restart the game (after game over screen is fully loaded)</span>
+            </li>
+            <li><img width=" 60" height="57" alt="1 key" src="assets/keys/1key.png" />
+                <img width="60" height="57" alt="2 key" src="assets/keys/2key.png" />
+                <img width="60" height="57" alt="3 key" src="assets/keys/3key.png" />
+                <span class="keyInstruction">Change jump height</span>
+            </li>
+            <li><img width=" 60" height="57" alt="D: " src="assets/keys/dkey.png" />
+                <span class="keyInstruction">Fall faster midjump</span>
+            </li>
+            <li><img height="57" alt="Space: " src="assets/keys/spacekey.png" />
+                <span class="keyInstruction">Jump</span>
+            </li>
+        </ul>
+        <p><a href='index.html'>Back to Game</a></p>
+    </main>
 </body>
+
 </html>

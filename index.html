@@ -9,7 +9,9 @@
         * {
             padding: 0;
             margin: 0;
-            font-family: 'Pixelify Sans';
+            font-family: 'Pixelify Sans', 'Arial', sans-serif;
+            background-color: black;
+            color: white;
         }
 
         main {
@@ -36,13 +38,48 @@
         .hidden {
             display: none;
         }
+
+        #header {
+            position: absolute;
+            top: 10px;
+            width: 80vw;
+            text-align: center;
+            font-size: 24px;
+            text-shadow: 1px 1px 1px pink, 0 0 1em pink, 0 0 0.1em pink;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 15px;
+            width: 80vw;
+            text-align: center;
+            font-size: 20px;
+
+        }
+
+        a {
+            color: lightblue;
+            text-decoration: none;
+            text-shadow: 1px 1px 1px white, 0 0 1em white, 0 0 0.1em white;
+        }
+
+        a:visited {
+            color: lightblue;
+        }
+
+        a:hover {
+            color: rgb(150, 223, 248)
+        }
     </style>
     <link rel="icon" type="image/x-icon" href="cycle1.png">
-    <title>Bicycle Demo</title>
+    <title>Bicycle Game</title>
 </head>
 
 <body>
     <main>
+        <div id="header">
+            <h1>Love you Mrs Neo!!</h1>
+        </div>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="hidden">
             <img src="assets/cycle1.png" id="pf0">
@@ -53,6 +90,11 @@
             <img src="assets/banana.png" id="banana">
             <img src="assets/trafficcone.png" id="cone">
             <img src="assets/floor.png" id="floor">
+        </div>
+        <div id="instructions">
+            <p>Click <a href='instructions.html'>here</a> for game controls.</p>
+            <p>Art by <a href='https://github.com/mynameisashllee'>@mynameisashllee</a>, code by <a
+                    href='https://github.com/Cp-Youfy'>@Cp-Youfy</a></p>
         </div>
     </main>
     <script>
